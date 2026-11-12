@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- COLOR SYSTEM (R G B values) ---------- */
+:root {
+  color-scheme: light;
+  --page: 255 255 255;
+  --surface: 255 255 255;
+  --soft: 244 245 252;
+  --ink: 15 18 38;
+  --brand: 82 90 255;        /* indigo */
+  --brand-dark: 62 68 214;
+  --violet: 139 92 246;
+  --pop: 255 94 125;         /* coral */
+  --shadow: 30 38 90;
+  --slate-50: 248 249 253; --slate-100: 240 242 250; --slate-200: 226 230 242;
+  --slate-300: 203 210 228; --slate-400: 148 160 188; --slate-500: 100 112 140;
+  --slate-600: 71 82 108;   --slate-700: 51 61 84;    --slate-800: 30 38 60;
+}
+
+.dark {
+  color-scheme: dark;
+  --page: 9 11 24;
+  --surface: 19 23 44;
+  --soft: 13 16 33;
+  --ink: 240 243 255;
+  --brand: 108 116 255;
+  --brand-dark: 134 141 255;
+  --violet: 167 139 250;
+  --pop: 255 118 145;
+  --shadow: 0 0 0;
+  --slate-50: 19 23 44;  --slate-100: 26 31 58;   --slate-200: 40 47 80;
+  --slate-300: 62 72 108; --slate-400: 125 137 172; --slate-500: 150 161 194;
+  --slate-600: 176 186 214; --slate-700: 200 208 230; --slate-800: 222 228 244;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply font-body text-slate-800 bg-page antialiased leading-relaxed overflow-x-hidden; }
+  h1, h2, h3, h4 { @apply font-heading text-ink; }
+  img { @apply max-w-full; }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-brand; }
+  ::selection { background: rgb(var(--brand) / 0.25); }
+}
+
+@layer components {
+  .wrap { @apply max-w-7xl mx-auto px-5 sm:px-6 lg:px-8; }
+  .section { @apply py-16 md:py-24; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold transition duration-200 hover:-translate-y-0.5 active:translate-y-0; }
+  .btn-primary { @apply btn text-white bg-gradient-to-r from-brand to-violet bg-[length:200%_100%] hover:bg-right hover:shadow-glow; }
+  .btn-outline { @apply btn border border-slate-300 text-ink hover:border-brand hover:text-brand hover:bg-brand/5; }
+  .card { @apply bg-surface rounded-2xl border border-slate-200 shadow-soft transition duration-300 hover:border-brand/60 hover:-translate-y-1 hover:shadow-glow; }
+  .field { @apply w-full border border-slate-200 rounded-xl px-4 py-3 bg-surface text-ink placeholder:text-slate-400 transition focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent; }
+  .text-gradient { @apply bg-gradient-to-r from-brand via-violet to-pop bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer; }
+  .bg-dots {
+    background-image: radial-gradient(rgb(var(--slate-300) / 0.7) 1px, transparent 1px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+            mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  }
+}
+
+/* Custom mouse pointer (see components/ui/CustomCursor.jsx): hide the system arrow, but keep the
+   normal text caret over form fields. The class is only added on devices with a real mouse. */
+html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
+html.has-custom-cursor :is(input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]) { cursor: text !important; }
+
+/* Smooth cross-fade of colors while switching theme (class is added by the toggle for ~0.4s) */
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color .35s ease, color .35s ease, border-color .35s ease, fill .35s ease, box-shadow .35s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

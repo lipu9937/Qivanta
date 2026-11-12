@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 let retryTimer;
 
 async function connect() {
-  const uri = process.env.MONGO_URI;
+  const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/qivanta";
   if (!uri) {
     console.error("MONGO_URI is missing. Create server/.env (copy server/.env.example).");
     return;

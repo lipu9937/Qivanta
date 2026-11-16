@@ -6,6 +6,8 @@ export default function PageHeader({ title, subtitle, crumb, description }) {
   return (
     <section className="relative overflow-hidden bg-night text-white py-14 md:py-20">
       <Seo title={title} description={description || subtitle} />
+      <div aria-hidden="true" className="absolute inset-0 bg-dots opacity-20" />
+      <div aria-hidden="true" className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
       {/* soft colored glows */}
       <div aria-hidden="true" className="pointer-events-none absolute -top-24 -right-16 w-72 h-72 rounded-full bg-brand/40 blur-3xl animate-blob" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 -left-10 w-72 h-72 rounded-full bg-pop/25 blur-3xl animate-blob [animation-delay:-6s]" />

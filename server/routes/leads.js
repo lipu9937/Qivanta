@@ -52,8 +52,12 @@ router.get("/", auth, ah(async (req, res) => {
 }));
 
 router.patch("/:id", auth, ah(async (req, res) => {
-  const { status } = z.object({ status: z.enum(["new", "contacted", "closed"]) }).parse(req.body);
-  const lead = await Lead.findByIdAndUpdate(req.params.id, { status }, { new: true });
+  // status and/or notes can be updated (notes is NEW)
+  const changes = z.object({
+    status: z.enum(["new", "contacted", "closed"]).optional(),
+    notes: z.string().max(2000).optional(),
+  }).parse(req.body);
+  const lead = await Lead.findByIdAndUpdate(req.params.id, changes, { new: true });
   lead ? res.json(lead) : res.status(404).json({ message: "Lead not found" });
 }));
 

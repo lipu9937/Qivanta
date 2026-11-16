@@ -1,6 +1,6 @@
 import Seo from "../components/ui/Seo";
 import Hero from "../components/home/Hero";
-import { ToolsStrip, ServicesOverview, FeaturedProjects, Process, WhyTeam, TeamPreview, Testimonials, LatestPosts, CtaBanner } from "../components/home/Sections";
+import { ToolsStrip, ServicesOverview, FeaturedProjects, Process, WhyTeam, TeamPreview, Testimonials, LatestPosts, FaqSection, CtaBanner } from "../components/home/Sections";
 
 export default function Home() {
   return (
@@ -15,6 +15,7 @@ export default function Home() {
       <TeamPreview />
       <Testimonials />
       <LatestPosts />
+      <FaqSection />
       <CtaBanner />
     </>
   );

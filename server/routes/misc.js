@@ -23,4 +23,14 @@ router.get("/stats", auth, ah(async (req, res) => {
   res.json({ totalLeads, newThisWeek, newLeads, publishedPosts, subscribers, projects });
 }));
 
+// NEW: admin can view, export and remove newsletter subscribers
+router.get("/subscribers", auth, ah(async (req, res) => {
+  res.json(await Subscriber.find().sort({ subscribedAt: -1 }));
+}));
+
+router.delete("/subscribers/:id", auth, ah(async (req, res) => {
+  await Subscriber.findByIdAndDelete(req.params.id);
+  res.json({ message: "Deleted" });
+}));
+
 module.exports = router;

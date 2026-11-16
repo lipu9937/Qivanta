@@ -25,14 +25,20 @@ export function ProjectCard({ item, index = 0 }) {
     <Reveal delay={(index % 3) * 0.08} className="h-full">
     <article className="card group overflow-hidden flex flex-col h-full">
       {item.image ? (
-        <div className="h-48 overflow-hidden"><img src={item.image} alt="" loading="lazy" className="h-48 w-full object-cover transition duration-500 group-hover:scale-105" /></div>
+        <div className="relative h-48 overflow-hidden">
+          <img src={item.image} alt="" loading="lazy" className="h-48 w-full object-cover transition duration-500 group-hover:scale-105" />
+          {item.category && <span className="absolute top-3 left-3 text-xs font-semibold bg-surface/90 text-ink backdrop-blur rounded-full px-3 py-1">{item.category}</span>}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-night/80 via-night/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
+            <span className="text-white text-sm font-semibold inline-flex items-center gap-1">View case study <ArrowRight size={14} /></span>
+          </div>
+        </div>
       ) : (
         <div className="h-48 bg-gradient-to-br from-night to-brand flex items-end p-5">
           <span className="text-xs font-semibold bg-pop text-white rounded-full px-3 py-1">{item.category}</span>
         </div>
       )}
       <div className="p-6 flex flex-col flex-1">
-        <h3 className="text-lg font-semibold">{item.title}</h3>
+        <h3 className="text-lg font-semibold"><Link to={`/portfolio/${item._id}`} className="hover:text-brand transition">{item.title}</Link></h3>
         <p className="text-xs text-slate-500 mb-3">{item.client}</p>
         <p className="text-slate-600 text-sm mb-4">{item.description}</p>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -53,7 +59,10 @@ export function PostCard({ post, index = 0 }) {
     <Reveal delay={(index % 3) * 0.08} className="h-full">
     <Link to={`/insights/${post.slug}`} className="card group overflow-hidden flex flex-col h-full">
       {post.coverImage ? (
-        <div className="h-44 overflow-hidden"><img src={post.coverImage} alt="" loading="lazy" className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" /></div>
+        <div className="relative h-44 overflow-hidden">
+          <img src={post.coverImage} alt="" loading="lazy" className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" />
+          {post.category && <span className="absolute top-3 left-3 text-xs font-semibold bg-surface/90 text-ink backdrop-blur rounded-full px-3 py-1">{post.category}</span>}
+        </div>
       ) : (
         <div className="h-44 bg-gradient-to-br from-night to-brand flex items-end p-5">
           <span className="text-xs font-semibold bg-brand text-white rounded-full px-3 py-1">{post.category}</span>

@@ -23,6 +23,16 @@ export default function Leads() {
     } catch (e) { toast.error(errMsg(e)); }
   };
 
+  // NEW: save the private note when the textarea loses focus (only if it changed)
+  const saveNote = async (l, notes) => {
+    if (notes === (l.notes || "")) return;
+    try {
+      const { data } = await api.patch(`/leads/${l._id}`, { notes });
+      setLeads((ls) => ls.map((x) => (x._id === l._id ? data : x)));
+      toast.success("Note saved");
+    } catch (e) { toast.error(errMsg(e)); }
+  };
+
   const remove = async (id) => {
     if (!window.confirm("Delete this lead permanently?")) return;
     try {
@@ -32,7 +42,7 @@ export default function Leads() {
   };
 
   const exportCsv = () => {
-    const cols = ["name", "email", "phone", "company", "service", "budget", "timeline", "status", "message", "createdAt"];
+    const cols = ["name", "email", "phone", "company", "service", "budget", "timeline", "status", "notes", "message", "createdAt"];
     const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const csv = [cols.join(","), ...leads.map((l) => cols.map((c) => cell(l[c])).join(","))].join("\n");
     const a = document.createElement("a");
@@ -54,7 +64,7 @@ export default function Leads() {
         <div className="bg-surface rounded-xl shadow-md overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-left bg-slate-50 text-slate-500">
-              <tr><th className="p-4">Name</th><th className="p-4">Contact</th><th className="p-4">Project</th><th className="p-4">Message</th><th className="p-4">Status</th><th className="p-4"><span className="sr-only">Delete</span></th></tr>
+              <tr><th className="p-4">Name</th><th className="p-4">Contact</th><th className="p-4">Project</th><th className="p-4">Message</th><th className="p-4">Status</th><th className="p-4">Notes</th><th className="p-4"><span className="sr-only">Delete</span></th></tr>
             </thead>
             <tbody>
               {leads.map((l) => (
@@ -68,6 +78,7 @@ export default function Leads() {
                       <option value="new">New</option><option value="contacted">Contacted</option><option value="closed">Closed</option>
                     </select>
                   </td>
+                  <td className="p-4"><textarea defaultValue={l.notes || ""} onBlur={(e) => saveNote(l, e.target.value)} rows="2" placeholder="Private note" aria-label={`Note for ${l.name}`} className="border rounded-md px-2 py-1 w-44 bg-surface text-ink" /></td>
                   <td className="p-4"><button onClick={() => remove(l._id)} aria-label={`Delete ${l.name}`} className="text-slate-400 hover:text-red-600"><Trash2 size={16} /></button></td>
                 </tr>
               ))}

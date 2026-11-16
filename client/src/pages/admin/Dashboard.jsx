@@ -1,7 +1,7 @@
 import ThemeToggle from "../../components/ui/ThemeToggle";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Inbox, FileText, LogOut, FolderKanban, Wrench, Users, Quote } from "lucide-react";
+import { LayoutDashboard, Inbox, FileText, LogOut, FolderKanban, Wrench, Users, Quote, HelpCircle, Mail, KeyRound, Share2, Cpu, Settings } from "lucide-react";
 import Seo from "../../components/ui/Seo";
 import Loader from "../../components/ui/Loader";
 import useFetch from "../../hooks/useFetch";
@@ -9,6 +9,10 @@ import { useAuth } from "../../context/AuthContext";
 import Leads from "./Leads";
 import Posts from "./Posts";
 import ResourceManager from "./ResourceManager";
+import Subscribers from "./Subscribers"; // NEW
+import SiteSettings from "./SiteSettings"; // NEW
+import { socialNames } from "../../config/socialIcons"; // NEW
+import ChangePassword from "./ChangePassword"; // NEW
 
 function Overview() {
   const { data, loading } = useFetch("/stats");
@@ -66,6 +70,35 @@ const screens = {
       ]} />
   )],
   posts: ["Blog posts", FileText, () => <Posts />],
+  // ---- NEW admin screens ----
+  faqs: ["FAQs", HelpCircle, () => (
+    <ResourceManager endpoint="/faqs" noun="FAQ" titleOf={(f) => f.question} subOf={(f) => `Order ${f.order ?? 0}`}
+      fields={[
+        { name: "question", label: "Question", required: true },
+        { name: "answer", label: "Answer", type: "textarea", required: true },
+        { name: "order", label: "Order (1 shows first)", type: "number" },
+      ]} />
+  )],
+  subscribers: ["Subscribers", Mail, () => <Subscribers />],
+  socials: ["Social media", Share2, () => (
+    <ResourceManager endpoint="/socials" noun="social link" titleOf={(s) => s.name} subOf={(s) => `${s.handle || ""} ${s.url}`}
+      fields={[
+        { name: "name", label: "Platform", type: "select", options: socialNames, required: true },
+        { name: "handle", label: "Handle shown on the website (e.g. @yourname)" },
+        { name: "url", label: "Link (https://...)", required: true },
+        { name: "color", label: "Hover color, optional (e.g. #25D366)" },
+        { name: "order", label: "Order (1 shows first)", type: "number" },
+      ]} />
+  )],
+  tech: ["Tech stack", Cpu, () => (
+    <ResourceManager endpoint="/tech" noun="technology" titleOf={(t) => t.name} subOf={(t) => `Order ${t.order ?? 0}`}
+      fields={[
+        { name: "name", label: "Technology name (e.g. React)", required: true },
+        { name: "order", label: "Order (1 shows first)", type: "number" },
+      ]} />
+  )],
+  settings: ["Site settings", Settings, () => <SiteSettings />],
+  password: ["Change password", KeyRound, () => <ChangePassword />],
 };
 
 export default function Dashboard() {

@@ -1,10 +1,12 @@
 import { ArrowUpRight } from "lucide-react";
-import { socials } from "../../config/socials";
+import useSocials from "../../hooks/useSocials"; // NEW: links now come from the admin dashboard
 import Reveal from "./Reveal";
 
 // variant "cards": icon + name + handle (Contact page)
 // variant "icons": round icon buttons (Footer)
 export default function SocialLinks({ variant = "cards" }) {
+  const socials = useSocials();
+  if (!socials.length) return null; // admin removed every link
   if (variant === "icons") {
     return (
       <ul className="flex flex-wrap gap-2.5" aria-label="Our social media">

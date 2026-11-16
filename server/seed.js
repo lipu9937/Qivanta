@@ -64,13 +64,23 @@ const posts = [
   { title: "Logo vs brand identity: what do you need?", slug: "logo-vs-brand-identity", category: "Design", author: "QIVANTA Team", excerpt: "How to decide what to spend on when you are starting out.", content: text, readTime: 2, published: true },
 ];
 
+// NEW: sample FAQs (edit them in the admin dashboard under "FAQs")
+const faqs = [
+  { question: "How much does a project cost?", answer: "It depends on scope. Send us a quote request and you will get a fixed price within 24 hours, before any work starts.", order: 1 },
+  { question: "How long does a typical project take?", answer: "Websites usually take 2 to 4 weeks once content is ready. Apps take longer, and we agree milestones up front.", order: 2 },
+  { question: "Do I own the final code and designs?", answer: "Yes. Everything is handed over to you when the final payment is made.", order: 3 },
+  { question: "Do you offer support after launch?", answer: "Yes. We offer monthly maintenance plans for updates, backups and quick fixes.", order: 4 },
+];
+
 (async () => {
   await mongoose.connect(process.env.MONGO_URI);
-  await Promise.all(["Service", "Post", "Project", "Testimonial", "TeamMember"].map((m) => M[m].deleteMany()));
+  await Promise.all(["Service", "Post", "Project", "Testimonial", "TeamMember", "Faq"].map((m) => M[m].deleteMany()));
   await M.Service.insertMany(services);
   await M.Project.insertMany(projects);
   await M.TeamMember.insertMany(team);
   await M.Post.insertMany(posts);
+  await M.Faq.insertMany(faqs);
+  await require("./utils/ensureDefaults")(true); // NEW: social links, tech stack, site settings
 
   const email = (process.env.ADMIN_EMAIL || "admin@qivanta.studio").toLowerCase();
   await M.User.deleteOne({ email });

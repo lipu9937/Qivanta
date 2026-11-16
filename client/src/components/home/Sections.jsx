@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Star, ChevronLeft, ChevronRight, MessageSquare, Layers, Receipt, LifeBuoy } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Layers, Receipt, LifeBuoy } from "lucide-react";
 import useFetch from "../../hooks/useFetch";
 import Loader from "../ui/Loader";
 import SectionTitle from "../ui/SectionTitle";
 import Reveal from "../ui/Reveal";
 import { ServiceCard, ProjectCard, PostCard } from "../ui/Cards";
 
+const defaultTools = ["React", "Node.js", "MongoDB", "Flutter", "Figma", "Tailwind CSS", "Shopify", "Firebase"];
+
 export function ToolsStrip() {
-  const tools = ["React", "Node.js", "MongoDB", "Flutter", "Figma", "Tailwind CSS", "Shopify", "Firebase"];
-  // The list is rendered twice so the scrolling loop has no gap
+  // NEW: the technologies come from Admin -> Tech stack (built-in list only if the server is unreachable)
+  const { data, loading, error } = useFetch("/tech");
+  const names = error ? defaultTools : (data || []).map((t) => t.name);
+  if (loading || !names.length) return null;
+  // Repeat short lists so the strip is always wider than the screen, then render it twice for a seamless loop
+  const tools = Array(Math.max(1, Math.ceil(12 / names.length))).fill(names).flat();
   return (
     <section className="border-y border-slate-200 py-5 bg-surface overflow-hidden" aria-label="Technologies we use">
       <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
@@ -29,7 +35,7 @@ export function ServicesOverview() {
   return (
     <section className="section">
       <div className="wrap">
-        <SectionTitle title="What we make" subtitle="Development and design under one roof." />
+        <SectionTitle eyebrow="Services" title="What we make" subtitle="Development and design under one roof." />
         {error && (
           <p className="text-center text-sm text-red-600 mb-6" role="alert">
             {error} Make sure the server and MongoDB are running, then run <code>npm run seed</code>.
@@ -51,7 +57,7 @@ export function FeaturedProjects() {
   return (
     <section className="section bg-soft">
       <div className="wrap">
-        <SectionTitle title="Recent work" subtitle="A few projects we are proud of." />
+        <SectionTitle eyebrow="Portfolio" title="Recent work" subtitle="A few projects we are proud of." />
         {loading ? <Loader /> : <div className="grid gap-6 md:grid-cols-3">{data.slice(0, 3).map((p, i) => <ProjectCard index={i} key={p._id} item={p} />)}</div>}
         <div className="text-center mt-10"><Link to="/portfolio" className="btn-outline">View all projects</Link></div>
       </div>
@@ -64,11 +70,12 @@ export function Process() {
   return (
     <section className="section">
       <div className="wrap">
-        <SectionTitle title="How a project runs" />
+        <SectionTitle eyebrow="Workflow" title="How a project runs" />
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map(([t, d], i) => (
             <Reveal as="li" key={t} delay={i * 0.1} className="h-full">
               <div className="card p-6 h-full">
+                <span aria-hidden="true" className="absolute top-3 right-5 text-6xl font-heading font-bold text-slate-200/70 select-none">0{i + 1}</span>
                 <span className="w-9 h-9 rounded-full bg-gradient-to-br from-brand to-violet text-white font-bold flex items-center justify-center mb-4 shadow-glow">{i + 1}</span>
                 <h3 className="font-semibold text-lg mb-2">{t}</h3>
                 <p className="text-slate-600 text-sm">{d}</p>
@@ -116,7 +123,7 @@ export function TeamPreview() {
   return (
     <section className="section">
       <div className="wrap">
-        <SectionTitle title="Meet the team" />
+        <SectionTitle eyebrow="People" title="Meet the team" />
         {loading ? <Loader /> : (
           <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
             {data.slice(0, 4).map((m, i) => (
@@ -145,9 +152,10 @@ export function Testimonials() {
   return (
     <section className="section bg-soft">
       <div className="wrap max-w-3xl text-center">
-        <SectionTitle title="What clients say" />
+        <SectionTitle eyebrow="Reviews" title="What clients say" />
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={i % data.length} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
+            <Quote aria-hidden="true" size={46} className="mx-auto mb-3 text-brand/25" />
             <div className="flex justify-center gap-1 text-pop mb-4" aria-label={`${t.rating} out of 5 stars`}>
               {Array.from({ length: t.rating }).map((_, k) => <Star key={k} size={20} fill="currentColor" />)}
             </div>
@@ -173,8 +181,43 @@ export function LatestPosts() {
   return (
     <section className="section">
       <div className="wrap">
-        <SectionTitle title="From the blog" />
+        <SectionTitle eyebrow="Blog" title="From the blog" />
         {loading ? <Loader /> : <div className="grid gap-6 md:grid-cols-3">{data.items.map((p, i) => <PostCard index={i} key={p._id} post={p} />)}</div>}
+      </div>
+    </section>
+  );
+}
+
+// NEW: FAQ accordion on the home page. Questions are managed in admin -> FAQs.
+export function FaqSection() {
+  const { data } = useFetch("/faqs");
+  const [open, setOpen] = useState(0);
+  if (!data?.length) return null;
+  return (
+    <section className="section bg-soft">
+      <div className="wrap max-w-3xl">
+        <SectionTitle eyebrow="FAQ" title="Frequently asked questions" />
+        <div className="space-y-3">
+          {data.map((f, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={f._id} className="bg-surface rounded-xl border border-slate-200">
+                <button type="button" onClick={() => setOpen(isOpen ? -1 : i)} aria-expanded={isOpen}
+                  className="w-full flex items-center justify-between gap-4 text-left p-5 font-semibold text-ink">
+                  {f.question}
+                  <ChevronDown size={18} className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
+                      <p className="px-5 pb-5 text-slate-600">{f.answer}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

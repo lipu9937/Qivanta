@@ -179,3 +179,37 @@ Open http://localhost:5000. The API and website share one origin.
 - **Theme toggle:** the sun/moon button in the navbar (and admin sidebar) switches light and dark mode. The choice is saved in the browser; first-time visitors get their device setting.
 - **Change the colors:** edit the `:root` (light) and `.dark` blocks at the top of `client/src/index.css`. Every page uses these variables, so one edit updates the whole site.
 - **Animations:** scroll reveals use `client/src/components/ui/Reveal.jsx` (wrap any block in `<Reveal>`). Hero blobs, the marquee and floating cards are CSS animations defined in `client/tailwind.config.js`. Visitors who set "reduce motion" on their device get no animation.
+
+
+## New features (v1.1)
+
+| Feature | Where |
+|---------|-------|
+| Project detail (case study) pages at `/portfolio/:id` | `client/src/pages/ProjectDetail.jsx`, `Cards.jsx` |
+| Portfolio search box | `client/src/pages/Portfolio.jsx` |
+| Home-page FAQ accordion, managed in admin -> FAQs | `Sections.jsx` (`FaqSection`), `models/index.js` (`Faq`), `/api/faqs` |
+| Blog: view counter, share buttons, related articles | `routes/posts.js`, `InsightDetail.jsx`, `ShareButtons.jsx` |
+| Admin: private notes on each quote request | `routes/leads.js`, `admin/Leads.jsx` |
+| Admin: Subscribers screen (search, CSV export, delete) | `routes/misc.js`, `admin/Subscribers.jsx` |
+| Admin: change password | `routes/auth.js`, `admin/ChangePassword.jsx` |
+| Privacy and Terms pages (templates: edit the text) | `client/src/pages/Legal.jsx`, `Footer.jsx` |
+| Floating WhatsApp button (uses `config/socials.js`) | `components/ui/WhatsAppButton.jsx`, `Layout.jsx` |
+| `robots.txt` and `sitemap.xml` (set `SITE_URL` in `server/.env`) | `server/server.js` |
+
+New API endpoints: `GET /api/projects/:id`, `GET /api/posts/:slug/related`, `/api/faqs` (public GET, admin POST/PUT/DELETE), `GET /api/subscribers`, `DELETE /api/subscribers/:id`, `POST /api/auth/change-password`. `PATCH /api/leads/:id` now also accepts `notes`.
+Run `npm run seed` again to load the sample FAQs (note: seed resets services, projects, posts, team, testimonials and FAQs).
+
+## Visual polish (v1.2)
+
+Design-only update, no backend changes. Hero parallax + trust chips + floating "Quote sent" card, button shine, card accent bar on hover, section labels ("eyebrows"), numbered process steps, quote icon on testimonials, project/blog image badges with a "View case study" hover, dotted page headers, glowing footer, branded scrollbar. Shared styles are at the bottom of `client/src/index.css`.
+
+## Admin controls for social media, tech stack and site details (v1.3)
+
+In the admin dashboard (`/admin`) there are three new tabs:
+
+- **Social media**: add, edit or delete social links. They appear in the footer, on the Contact page and (for "WhatsApp") as the floating button.
+- **Tech stack**: add, edit or delete the technologies in the moving strip on the home page.
+- **Site settings**: contact email, phone, address, reply time and the footer description.
+
+New API endpoints: `/api/socials`, `/api/tech` (public GET, admin POST/PUT/DELETE) and `/api/settings` (public GET, admin PUT).
+The starting content lives in `server/data/defaults.js`. It is copied into the database once, on the first server start, so existing installs get it automatically. `npm run seed` resets these lists to the defaults.

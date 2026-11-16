@@ -10,6 +10,9 @@ const About = lazy(() => import("./pages/About"));
 const Services = lazy(() => import("./pages/Services"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail")); // NEW
+const Privacy = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Privacy }))); // NEW
+const Terms = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Terms }))); // NEW
 const Insights = lazy(() => import("./pages/Insights"));
 const InsightDetail = lazy(() => import("./pages/InsightDetail"));
 const Team = lazy(() => import("./pages/Team"));
@@ -35,6 +38,9 @@ export default function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/services/:slug" element={<ServiceDetail />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/portfolio/:id" element={<ProjectDetail />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/insights/:slug" element={<InsightDetail />} />
             <Route path="/team" element={<Team />} />

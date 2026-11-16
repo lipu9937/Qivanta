@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ScrollProgress, BackToTop } from "../ui/ScrollEffects";
+import WhatsAppButton from "../ui/WhatsAppButton"; // NEW
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -21,6 +22,7 @@ export default function Layout() {
       </motion.main>
       <Footer />
       <BackToTop />
+      <WhatsAppButton />
     </>
   );
 }

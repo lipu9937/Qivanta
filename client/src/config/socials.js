@@ -1,8 +1,10 @@
 import { Facebook, Github, Instagram, Linkedin, MessageCircle, Send, Twitter, Youtube, Dribbble } from "lucide-react";
 
-// EDIT THIS LIST: replace each `url` and `handle` with your real accounts.
-// Delete a line to hide that network; add a new line (any lucide-react icon) to show another.
-// The links appear on the Contact page and in the website footer.
+// Social links are now managed in the admin dashboard (Admin -> Social media).
+// This file is used for two things only:
+//   1. the icon + brand color for each platform name (see socialIcons.js), and
+//   2. a fallback list shown if the server cannot be reached.
+// To offer a NEW platform in the admin dropdown, add a line here with any lucide-react icon.
 export const socials = [
   { name: "WhatsApp",  handle: "+1 234 567 890",     url: "https://wa.me/1234567890",                       icon: MessageCircle, color: "#25D366" },
   { name: "Instagram", handle: "@qivanta",   url: "https://instagram.com/qivanta",          icon: Instagram,     color: "#E4405F" },

@@ -25,8 +25,27 @@ router.get("/", ah(async (req, res) => {
 // Admin: all posts including drafts (must be before /:slug)
 router.get("/admin/all", auth, ah(async (req, res) => res.json(await Post.find().sort({ createdAt: -1 }))));
 
+// NEW: related articles (same category first, then newest), excluding the current one
+router.get("/:slug/related", ah(async (req, res) => {
+  const current = await Post.findOne({ slug: req.params.slug, published: true }).select("category");
+  if (!current) return res.json([]);
+  const base = { published: true, slug: { $ne: req.params.slug } };
+  let items = await Post.find({ ...base, category: current.category }).sort({ createdAt: -1 }).limit(3).select("-content");
+  if (items.length < 3) {
+    const more = await Post.find({ ...base, _id: { $nin: items.map((i) => i._id) } })
+      .sort({ createdAt: -1 }).limit(3 - items.length).select("-content");
+    items = items.concat(more);
+  }
+  res.json(items);
+}));
+
 router.get("/:slug", ah(async (req, res) => {
-  const post = await Post.findOne({ slug: req.params.slug, published: true });
+  // Counts one view per request (NEW). timestamps:false keeps "updatedAt" unchanged.
+  const post = await Post.findOneAndUpdate(
+    { slug: req.params.slug, published: true },
+    { $inc: { views: 1 } },
+    { new: true, timestamps: false }
+  );
   post ? res.json(post) : res.status(404).json({ message: "Post not found" });
 }));
 

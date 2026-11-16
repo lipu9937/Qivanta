@@ -10,7 +10,7 @@ const rateLimit = require("express-rate-limit");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
 const crud = require("./utils/crud");
-const { Service, Project, Testimonial, TeamMember } = require("./models");
+const { Service, Project, Testimonial, TeamMember, Faq, Post, SocialLink, TechItem } = require("./models");
 
 const app = express();
 connectDB();
@@ -61,10 +61,43 @@ app.use("/api/posts", require("./routes/posts"));
 app.use("/api/leads", require("./routes/leads"));
 app.use("/api", require("./routes/misc")); // /subscribe, /stats
 app.use("/api/services", crud(Service, { filter: { isActive: true }, sort: { createdAt: 1 }, bySlug: true }));
-app.use("/api/projects", crud(Project, { sort: { featured: -1, createdAt: -1 } }));
+app.use("/api/projects", crud(Project, { sort: { featured: -1, createdAt: -1 }, byId: true }));
+app.use("/api/faqs", crud(Faq, { sort: { order: 1, _id: 1 } })); // NEW
+app.use("/api/socials", crud(SocialLink, { sort: { order: 1, _id: 1 } })); // NEW: admin-managed social media
+app.use("/api/tech", crud(TechItem, { sort: { order: 1, _id: 1 } })); // NEW: admin-managed tech stack
+app.use("/api/settings", require("./routes/settings")); // NEW: contact details + footer text
 app.use("/api/testimonials", crud(Testimonial));
 app.use("/api/team", crud(TeamMember, { sort: { order: 1 } }));
 app.use("/api", (req, res) => res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` }));
+
+// NEW: robots.txt and sitemap.xml for search engines.
+// Set SITE_URL in server/.env to your real domain (falls back to the first CLIENT_URL).
+const siteUrl = () =>
+  (process.env.SITE_URL || (process.env.CLIENT_URL || "http://localhost:5173").split(",")[0]).trim().replace(/\/$/, "");
+
+app.get("/robots.txt", (req, res) =>
+  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${siteUrl()}/sitemap.xml\n`)
+);
+
+app.get("/sitemap.xml", async (req, res, next) => {
+  try {
+    const base = siteUrl();
+    const urls = ["", "/about", "/services", "/portfolio", "/team", "/insights", "/contact", "/privacy", "/terms"].map((p) => base + p);
+    if (mongoose.connection.readyState === 1) {
+      const [services, posts, projects] = await Promise.all([
+        Service.find({ isActive: true }).select("slug"),
+        Post.find({ published: true }).select("slug"),
+        Project.find().select("_id"),
+      ]);
+      services.forEach((s) => urls.push(`${base}/services/${s.slug}`));
+      posts.forEach((p) => urls.push(`${base}/insights/${p.slug}`));
+      projects.forEach((p) => urls.push(`${base}/portfolio/${p._id}`));
+    }
+    res.type("application/xml").send(
+      `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>`
+    );
+  } catch (e) { next(e); }
+});
 
 // Integrated mode: if the client has been built, Express serves it too (one server, one port)
 const dist = path.join(__dirname, "../client/dist");

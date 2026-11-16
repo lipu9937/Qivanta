@@ -31,6 +31,7 @@ const leadSchema = new Schema({
   timeline: String,
   message: { type: String, required: true },
   status: { type: String, enum: ["new", "contacted", "closed"], default: "new" },
+  notes: { type: String, default: "" }, // NEW: private admin notes
 }, { timestamps: true });
 
 const serviceSchema = new Schema({
@@ -58,6 +59,7 @@ const postSchema = new Schema({
   author: String,
   readTime: Number,
   published: { type: Boolean, default: false },
+  views: { type: Number, default: 0 }, // NEW: article view counter
 }, { timestamps: true });
 autoSlug(postSchema);
 postSchema.pre("validate", function () {
@@ -89,6 +91,47 @@ const teamSchema = new Schema({
   order: { type: Number, default: 0 },
 });
 
+// NEW: FAQs shown on the home page and managed from the admin dashboard
+const faqSchema = new Schema({
+  question: { type: String, required: true },
+  answer: { type: String, required: true },
+  order: { type: Number, default: 0 },
+});
+
+// NEW: social media links shown in the footer and on the Contact page.
+// Only safe link types are allowed, so a "javascript:" link can never be saved.
+const socialSchema = new Schema({
+  name: { type: String, required: true, trim: true },
+  handle: { type: String, default: "", trim: true },
+  url: {
+    type: String, required: true, trim: true,
+    validate: { validator: (v) => /^(https?:\/\/|mailto:|tel:)/i.test(v), message: "Link must start with https://, http://, mailto: or tel:" },
+  },
+  color: {
+    type: String, default: "", trim: true,
+    validate: { validator: (v) => !v || /^#[0-9a-fA-F]{6}$/.test(v), message: "Color must look like #25D366" },
+  },
+  order: { type: Number, default: 0 },
+});
+
+// NEW: technologies shown in the moving strip on the home page
+const techSchema = new Schema({
+  name: { type: String, required: true, trim: true },
+  order: { type: Number, default: 0 },
+});
+
+// NEW: one document with contact details and footer text (key is always "main")
+const settingSchema = new Schema({
+  key: { type: String, default: "main", unique: true },
+  email: { type: String, default: "" },
+  phone: { type: String, default: "" },
+  address: { type: String, default: "" },
+  hours: { type: String, default: "" },
+  footerText: { type: String, default: "" },
+  socialsSeeded: { type: Boolean, default: false },
+  techSeeded: { type: Boolean, default: false },
+});
+
 const subscriberSchema = new Schema({
   email: { type: String, unique: true, required: true, lowercase: true },
   subscribedAt: { type: Date, default: Date.now },
@@ -103,4 +146,8 @@ module.exports = {
   Testimonial: model("Testimonial", testimonialSchema),
   TeamMember: model("TeamMember", teamSchema),
   Subscriber: model("Subscriber", subscriberSchema),
+  Faq: model("Faq", faqSchema),
+  SocialLink: model("SocialLink", socialSchema),
+  TechItem: model("TechItem", techSchema),
+  SiteSetting: model("SiteSetting", settingSchema),
 };

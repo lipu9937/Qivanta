@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import { Mail, Clock } from "lucide-react";
+import { Mail, Clock, Phone, MapPin } from "lucide-react";
+import useSettings from "../hooks/useSettings"; // NEW
 import PageHeader from "../components/ui/PageHeader";
 import SocialLinks from "../components/ui/SocialLinks";
 import useFetch from "../hooks/useFetch";
@@ -67,8 +68,10 @@ export default function Contact() {
 
           <div className="lg:col-span-2 space-y-8">
             <ul className="space-y-4 text-slate-700">
-              <li className="flex gap-3"><Mail className="text-brand shrink-0" /> hello@qivanta.studio</li>
-              <li className="flex gap-3"><Clock className="text-brand shrink-0" /> We reply within 24 hours</li>
+              {settings.email && <li className="flex gap-3"><Mail className="text-brand shrink-0" /> <a href={`mailto:${settings.email}`} className="hover:text-brand">{settings.email}</a></li>}
+              {settings.phone && <li className="flex gap-3"><Phone className="text-brand shrink-0" /> <a href={`tel:${settings.phone.replace(/\s/g, "")}`} className="hover:text-brand">{settings.phone}</a></li>}
+              {settings.address && <li className="flex gap-3"><MapPin className="text-brand shrink-0" /> {settings.address}</li>}
+              {settings.hours && <li className="flex gap-3"><Clock className="text-brand shrink-0" /> {settings.hours}</li>}
             </ul>
             <SocialLinks />
             <div>

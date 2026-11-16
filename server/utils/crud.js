@@ -3,7 +3,7 @@ const auth = require("../middleware/auth");
 const ah = require("./asyncHandler");
 
 // Public GET (list + optional slug), admin-only POST/PUT/DELETE
-module.exports = (Model, { filter = {}, sort = { createdAt: -1 }, bySlug = false } = {}) => {
+module.exports = (Model, { filter = {}, sort = { createdAt: -1 }, bySlug = false, byId = false } = {}) => {
   const router = express.Router();
   const notFound = (res) => res.status(404).json({ message: "Not found" });
 
@@ -12,6 +12,14 @@ module.exports = (Model, { filter = {}, sort = { createdAt: -1 }, bySlug = false
   if (bySlug) {
     router.get("/:slug", ah(async (req, res) => {
       const doc = await Model.findOne({ slug: req.params.slug, ...filter });
+      doc ? res.json(doc) : notFound(res);
+    }));
+  }
+
+  // NEW: optional GET /:id (used by the project detail page)
+  if (byId) {
+    router.get("/:id", ah(async (req, res) => {
+      const doc = await Model.findOne({ _id: req.params.id, ...filter });
       doc ? res.json(doc) : notFound(res);
     }));
   }

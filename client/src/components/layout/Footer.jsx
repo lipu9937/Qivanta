@@ -14,7 +14,7 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const settings = useSettings(); // NEW: contact details + footer text from the admin dashboard
   const { data: services } = useFetch("/services"); // NEW: footer service links follow the services you manage in admin
-  const svc = services?.length ? services.slice(0, 4).map((s) => [s.title, `/services/${s.slug}`]) : defaultSvc.map((s) => [s, "/services"]);
+  const svc = Array.isArray(services) && services.length ? services.slice(0, 4).map((s) => [s.title, `/services/${s.slug}`]) : defaultSvc.map((s) => [s, "/services"]);
 
   const subscribe = async (e) => {
     e.preventDefault();

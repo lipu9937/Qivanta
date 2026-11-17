@@ -13,5 +13,5 @@ const empty = { email: "", phone: "", address: "", hours: "", footerText: "" };
 export default function useSettings() {
   const { data, loading, error } = useFetch("/settings");
   if (loading) return empty;
-  return error || !data ? fallback : { ...empty, ...data };
+  return error || !data || Array.isArray(data) || typeof data !== "object" ? fallback : { ...empty, ...data };
 }

@@ -203,7 +203,7 @@ Run `npm run seed` again to load the sample FAQs (note: seed resets services, pr
 
 Design-only update, no backend changes. Hero parallax + trust chips + floating "Quote sent" card, button shine, card accent bar on hover, section labels ("eyebrows"), numbered process steps, quote icon on testimonials, project/blog image badges with a "View case study" hover, dotted page headers, glowing footer, branded scrollbar. Shared styles are at the bottom of `client/src/index.css`.
 
-## Admin controls for social media, tech stack and site details (v1.3)
+## Admin controls for social media, tech stack and site details (v1.3.2)
 
 In the admin dashboard (`/admin`) there are three new tabs:
 
@@ -213,3 +213,9 @@ In the admin dashboard (`/admin`) there are three new tabs:
 
 New API endpoints: `/api/socials`, `/api/tech` (public GET, admin POST/PUT/DELETE) and `/api/settings` (public GET, admin PUT).
 The starting content lives in `server/data/defaults.js`. It is copied into the database once, on the first server start, so existing installs get it automatically. `npm run seed` resets these lists to the defaults.
+
+## Crash protection (v1.3.2)
+
+- `client/src/hooks/useFetch.js` treats a web page (HTML) answer as an error instead of data. This happens when a host sends `/api/...` to the website, or `VITE_API_URL` points to the wrong place.
+- Pages now fall back safely (built-in social links, tech list and contact details) when the API answer is missing or unexpected.
+- `client/src/components/layout/Layout.jsx` wraps each page in an error boundary, so one broken page no longer replaces the menu and footer.

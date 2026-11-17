@@ -13,7 +13,7 @@ const defaultTools = ["React", "Node.js", "MongoDB", "Flutter", "Figma", "Tailwi
 export function ToolsStrip() {
   // NEW: the technologies come from Admin -> Tech stack (built-in list only if the server is unreachable)
   const { data, loading, error } = useFetch("/tech");
-  const names = error ? defaultTools : (data || []).map((t) => t.name);
+  const names = error || !Array.isArray(data) ? defaultTools : data.map((t) => t.name);
   if (loading || !names.length) return null;
   // Repeat short lists so the strip is always wider than the screen, then render it twice for a seamless loop
   const tools = Array(Math.max(1, Math.ceil(12 / names.length))).fill(names).flat();
@@ -192,7 +192,7 @@ export function LatestPosts() {
 export function FaqSection() {
   const { data } = useFetch("/faqs");
   const [open, setOpen] = useState(0);
-  if (!data?.length) return null;
+  if (!Array.isArray(data) || !data.length) return null;
   return (
     <section className="section bg-soft">
       <div className="wrap max-w-3xl">

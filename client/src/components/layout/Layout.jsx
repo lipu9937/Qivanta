@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ScrollProgress, BackToTop } from "../ui/ScrollEffects";
 import WhatsAppButton from "../ui/WhatsAppButton"; // NEW
+import ErrorBoundary from "../ui/ErrorBoundary"; // NEW
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -18,7 +19,8 @@ export default function Layout() {
       <Navbar />
       {/* key = pathname, so every page change plays a short fade-in */}
       <motion.main key={pathname} className="pt-20" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        <Outlet />
+        {/* NEW: if one page crashes, the menu and footer stay and other pages keep working */}
+        <ErrorBoundary key={pathname}><Outlet /></ErrorBoundary>
       </motion.main>
       <Footer />
       <BackToTop />

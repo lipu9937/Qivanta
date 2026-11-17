@@ -26,6 +26,7 @@ const schema = z.object({
 });
 
 export default function Contact() {
+  const settings = useSettings(); // NEW: contact details from Admin -> Site settings (this line was missing)
   const [params] = useSearchParams();
   const { data: services } = useFetch("/services");
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } =
@@ -56,7 +57,7 @@ export default function Contact() {
             <input {...register("company")} placeholder="Company or brand (optional)" aria-label="Company" className="field" />
             <select {...register("service")} aria-label="Service" className="field">
               <option value="">What do you need?</option>
-              {(services || []).map((s) => <option key={s._id} value={s.title}>{s.title}</option>)}
+              {(Array.isArray(services) ? services : []).map((s) => <option key={s._id} value={s.title}>{s.title}</option>)}
             </select>
             <div className="grid sm:grid-cols-2 gap-4">
               <select {...register("budget")} aria-label="Budget" className="field"><option value="">Budget</option>{budgets.map((b) => <option key={b}>{b}</option>)}</select>

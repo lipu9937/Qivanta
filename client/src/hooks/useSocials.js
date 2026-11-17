@@ -6,6 +6,6 @@ import { withIcon } from "../config/socialIcons";
 export default function useSocials() {
   const { data, loading, error } = useFetch("/socials");
   if (loading) return [];
-  if (error || !data) return fallback;
+  if (error || !Array.isArray(data)) return fallback; // NEW: never crash on an unexpected answer
   return data.map(withIcon);
 }

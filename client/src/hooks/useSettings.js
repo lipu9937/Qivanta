@@ -8,7 +8,7 @@ const fallback = {
   hours: "We reply within 24 hours",
   footerText: "A freelance team of designers and developers building websites, apps and brands.",
 };
-const empty = { email: "", phone: "", address: "", hours: "", footerText: "" };
+const empty = { email: "workwithqivanta@gmail.com", phone: "", address: "", hours: "", footerText: "" };
 
 export default function useSettings() {
   const { data, loading, error } = useFetch("/settings");

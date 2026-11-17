@@ -39,7 +39,7 @@ export function Terms() {
       ["Quotes and projects", "A quote request is not a contract. Work begins after both sides agree on the scope, price and timeline in writing."],
       ["Ownership", "Unless agreed otherwise, you own the final deliverables once the final payment is received. We may show completed work in our portfolio."],
       ["Liability", "We take care to deliver quality work but cannot be held responsible for indirect losses arising from the use of this website or our deliverables."],
-      ["Contact", "Questions about these terms? Email hello@qivanta.studio."],
+      ["Contact", "Questions about these terms? Email workwithqivanta@gmail.com."],
     ]} />
   );
 }
